@@ -1,0 +1,67 @@
+[
+  {"name": "Barbell Bench Press", "muscle_group": "chest", "type": "compound"},
+  {"name": "Dumbbell Bench Press", "muscle_group": "chest", "type": "compound"},
+  {"name": "Incline Barbell Bench Press", "muscle_group": "chest", "type": "compound"},
+  {"name": "Incline Dumbbell Press", "muscle_group": "chest", "type": "compound"},
+  {"name": "Decline Bench Press", "muscle_group": "chest", "type": "compound"},
+  {"name": "Chest Fly Machine", "muscle_group": "chest", "type": "isolation"},
+  {"name": "Cable Chest Fly", "muscle_group": "chest", "type": "isolation"},
+  {"name": "Dumbbell Fly", "muscle_group": "chest", "type": "isolation"},
+  {"name": "Push-ups", "muscle_group": "chest", "type": "compound"},
+
+  {"name": "Barbell Row", "muscle_group": "back", "type": "compound"},
+  {"name": "Dumbbell Row", "muscle_group": "back", "type": "compound"},
+  {"name": "Lat Pulldown", "muscle_group": "back", "type": "compound"},
+  {"name": "Pull-ups", "muscle_group": "back", "type": "compound"},
+  {"name": "Chin-ups", "muscle_group": "back", "type": "compound"},
+  {"name": "Seated Cable Row", "muscle_group": "back", "type": "compound"},
+  {"name": "T-Bar Row", "muscle_group": "back", "type": "compound"},
+  {"name": "Deadlift", "muscle_group": "back", "type": "compound"},
+  {"name": "Face Pulls", "muscle_group": "back", "type": "isolation"},
+
+  {"name": "Overhead Press", "muscle_group": "shoulders", "type": "compound"},
+  {"name": "Dumbbell Shoulder Press", "muscle_group": "shoulders", "type": "compound"},
+  {"name": "Lateral Raises", "muscle_group": "shoulders", "type": "isolation"},
+  {"name": "Front Raises", "muscle_group": "shoulders", "type": "isolation"},
+  {"name": "Rear Delt Fly", "muscle_group": "shoulders", "type": "isolation"},
+  {"name": "Arnold Press", "muscle_group": "shoulders", "type": "compound"},
+  {"name": "Cable Lateral Raise", "muscle_group": "shoulders", "type": "isolation"},
+
+  {"name": "Barbell Curl", "muscle_group": "biceps", "type": "isolation"},
+  {"name": "Dumbbell Curl", "muscle_group": "biceps", "type": "isolation"},
+  {"name": "Hammer Curl", "muscle_group": "biceps", "type": "isolation"},
+  {"name": "Preacher Curl", "muscle_group": "biceps", "type": "isolation"},
+  {"name": "Cable Curl", "muscle_group": "biceps", "type": "isolation"},
+  {"name": "Concentration Curl", "muscle_group": "biceps", "type": "isolation"},
+
+  {"name": "Tricep Pushdown", "muscle_group": "triceps", "type": "isolation"},
+  {"name": "Overhead Tricep Extension", "muscle_group": "triceps", "type": "isolation"},
+  {"name": "Skull Crushers", "muscle_group": "triceps", "type": "isolation"},
+  {"name": "Close Grip Bench Press", "muscle_group": "triceps", "type": "compound"},
+  {"name": "Dips", "muscle_group": "triceps", "type": "compound"},
+
+  {"name": "Barbell Squat", "muscle_group": "quads", "type": "compound"},
+  {"name": "Front Squat", "muscle_group": "quads", "type": "compound"},
+  {"name": "Leg Press", "muscle_group": "quads", "type": "compound"},
+  {"name": "Leg Extension", "muscle_group": "quads", "type": "isolation"},
+  {"name": "Bulgarian Split Squat", "muscle_group": "quads", "type": "compound"},
+  {"name": "Hack Squat", "muscle_group": "quads", "type": "compound"},
+
+  {"name": "Romanian Deadlift", "muscle_group": "hamstrings", "type": "compound"},
+  {"name": "Leg Curl", "muscle_group": "hamstrings", "type": "isolation"},
+  {"name": "Good Mornings", "muscle_group": "hamstrings", "type": "compound"},
+  {"name": "Nordic Curls", "muscle_group": "hamstrings", "type": "isolation"},
+
+  {"name": "Hip Thrust", "muscle_group": "glutes", "type": "isolation"},
+  {"name": "Glute Bridge", "muscle_group": "glutes", "type": "isolation"},
+  {"name": "Cable Kickbacks", "muscle_group": "glutes", "type": "isolation"},
+
+  {"name": "Standing Calf Raise", "muscle_group": "calves", "type": "isolation"},
+  {"name": "Seated Calf Raise", "muscle_group": "calves", "type": "isolation"},
+
+  {"name": "Plank", "muscle_group": "core", "type": "isolation"},
+  {"name": "Crunches", "muscle_group": "core", "type": "isolation"},
+  {"name": "Russian Twists", "muscle_group": "core", "type": "isolation"},
+  {"name": "Leg Raises", "muscle_group": "core", "type": "isolation"},
+  {"name": "Cable Crunches", "muscle_group": "core", "type": "isolation"}
+]
