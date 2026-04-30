@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(streamlit run *)",
+      "Bash(python -m py_compile components/body_diagram.py pages/4_Library.py)",
+      "Bash(python *)",
+      "Bash(curl -sS -o /dev/null -w \"status=%{http_code}\\\\n\" http://localhost:8502/Library)"
+    ]
+  }
+}

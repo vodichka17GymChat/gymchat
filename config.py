@@ -50,3 +50,16 @@ REPS_MIN, REPS_MAX = 1, 100
 RPE_MIN, RPE_MAX = 1, 10
 RIR_MIN, RIR_MAX = 0, 10
 REST_SECONDS_MAX = 1200  # 20-minute cap on rest input
+
+# --- Workout defaults ---
+# Default rest target shown in the timer UI. The actual logged rest is
+# always whatever we measured between sets - this is just the visual
+# "you're aiming for" reference.
+DEFAULT_REST_SECONDS = 90
+
+# --- Profile completion ---
+# A profile is considered "complete" when athlete_type is set. We picked
+# this single field as the marker because (a) it's the most useful for
+# future analytics/coaching, and (b) it's not a free-text field, so a
+# user filling it in always means a deliberate choice.
+PROFILE_COMPLETE_MARKER = "athlete_type"

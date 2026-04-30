@@ -31,6 +31,8 @@ def render(key_prefix: str = "picker") -> dict:
     one page without Streamlit widget-key collisions.
     """
     # --- Filters ---
+    st.markdown('<p class="gc-section-label">Filters</p>', unsafe_allow_html=True)
+
     muscle_groups = ["All"] + exercises_db.get_muscle_groups()
     exercise_types = ["All", "compound", "isolation"]
 
@@ -59,8 +61,8 @@ def render(key_prefix: str = "picker") -> dict:
         return None
 
     # --- Exercise selector ---
-    # Build display labels but keep the underlying rows so we can
-    # return ids without parsing strings.
+    st.markdown('<p class="gc-section-label">Exercise</p>', unsafe_allow_html=True)
+
     options = {
         f"{row['exercise_name']}  ·  {row['muscle_group']} · {row['exercise_type']}": row
         for row in filtered
@@ -73,15 +75,17 @@ def render(key_prefix: str = "picker") -> dict:
     chosen = options[chosen_label]
 
     # --- Equipment fields ---
+    st.markdown('<p class="gc-section-label">Equipment (optional)</p>', unsafe_allow_html=True)
+
     col1, col2 = st.columns(2)
     with col1:
         brand = st.text_input(
-            "Equipment brand (optional)",
+            "Equipment brand",
             key=f"{key_prefix}_brand",
         )
     with col2:
         model = st.text_input(
-            "Equipment model (optional)",
+            "Equipment model",
             key=f"{key_prefix}_model",
         )
 
