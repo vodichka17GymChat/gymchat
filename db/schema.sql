@@ -104,6 +104,46 @@ CREATE TABLE IF NOT EXISTS template_exercises (
 );
 
 -- ============================================================
+-- Programs (ordered sequences of templates)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS programs (
+    program_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id         INTEGER NOT NULL,
+    name            TEXT NOT NULL,
+    description     TEXT,
+    cycles          INTEGER NOT NULL DEFAULT 1,  -- times to repeat the session sequence
+    created_at      TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- ============================================================
+-- Program sessions (ordered slots within a program)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS program_sessions (
+    program_session_id  INTEGER PRIMARY KEY AUTOINCREMENT,
+    program_id          INTEGER NOT NULL,
+    position            INTEGER NOT NULL,   -- 1-based; order to perform the templates
+    template_id         INTEGER NOT NULL,
+    FOREIGN KEY (program_id) REFERENCES programs(program_id),
+    FOREIGN KEY (template_id) REFERENCES workout_templates(template_id)
+);
+
+-- ============================================================
+-- Program enrollments (one active enrollment per user at a time)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS program_enrollments (
+    enrollment_id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id             INTEGER NOT NULL,
+    program_id          INTEGER NOT NULL,
+    enrolled_at         TEXT NOT NULL,
+    next_position       INTEGER NOT NULL DEFAULT 1,  -- position within the sequence
+    current_cycle       INTEGER NOT NULL DEFAULT 1,  -- which repeat of the sequence
+    status              TEXT NOT NULL DEFAULT 'active',  -- 'active'|'completed'|'paused'
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (program_id) REFERENCES programs(program_id)
+);
+
+-- ============================================================
 -- Indexes for query performance
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_sessions_user        ON workout_sessions(user_id);
@@ -113,3 +153,6 @@ CREATE INDEX IF NOT EXISTS idx_executions_exercise  ON exercise_executions(exerc
 CREATE INDEX IF NOT EXISTS idx_sets_execution       ON sets(execution_id);
 CREATE INDEX IF NOT EXISTS idx_templates_user       ON workout_templates(user_id);
 CREATE INDEX IF NOT EXISTS idx_template_exercises   ON template_exercises(template_id);
+CREATE INDEX IF NOT EXISTS idx_programs_user        ON programs(user_id);
+CREATE INDEX IF NOT EXISTS idx_program_sessions     ON program_sessions(program_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_user     ON program_enrollments(user_id);
