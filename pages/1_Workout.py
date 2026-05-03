@@ -29,6 +29,13 @@ import config
 from components.exercise_card import render as render_exercise_card
 from components.exercise_picker import render as render_exercise_picker
 from components.theme import inject_theme
+from services.templates import (
+    delete_template,
+    get_template_exercises,
+    get_user_templates,
+    launch_template,
+    save_session_as_template,
+)
 from services.workout import (
     WorkoutError,
     add_exercise,
@@ -81,37 +88,110 @@ st.title("🏋️ Workout")
 # State 1: No active session - start a new workout
 # ============================================================
 
+def _render_optional_details(key_prefix: str = "") -> tuple:
+    """Shared optional-details expander. Returns (gym_location, sleep_hours, energy)."""
+    with st.expander("Optional details (location, sleep, energy)"):
+        gym_location = st.text_input("Gym location", key=f"{key_prefix}gym_location")
+        sleep_hours = st.number_input(
+            "Sleep last night (hours)",
+            min_value=0.0,
+            max_value=14.0,
+            value=0.0,
+            step=0.5,
+            help="Leave at 0 to skip.",
+            key=f"{key_prefix}sleep_hours",
+        )
+        energy = st.slider(
+            "Energy level right now",
+            min_value=1,
+            max_value=10,
+            value=7,
+            help="1 = exhausted, 10 = ready to go.",
+            key=f"{key_prefix}energy",
+        )
+    return gym_location, sleep_hours, energy
+
+
 def _render_start_form():
     """The 'begin a new workout' form, shown when no session is active."""
+    templates = get_user_templates(USER_ID)
+
+    # ── Start from template ───────────────────────────────────────
+    if templates:
+        with st.container(border=True):
+            st.subheader("Start from a template")
+
+            template_names = [t["name"] for t in templates]
+            selected_idx = st.selectbox(
+                "Choose a template",
+                range(len(templates)),
+                format_func=lambda i: template_names[i],
+                key="template_select",
+            )
+            selected = templates[selected_idx]
+
+            # Preview the exercise list
+            exercises = get_template_exercises(selected["template_id"])
+            if exercises:
+                lines = "  \n".join(
+                    f"- {ex['exercise_name']} · *{ex['muscle_group']}*"
+                    for ex in exercises
+                )
+                st.markdown(lines)
+
+            gym_location, sleep_hours, energy = _render_optional_details("tmpl_")
+
+            col_launch, col_del = st.columns([3, 1])
+            with col_launch:
+                if st.button(
+                    f"▶️ Start "{selected['name']}"",
+                    use_container_width=True,
+                    type="primary",
+                    key="launch_template_btn",
+                ):
+                    try:
+                        session_id = launch_template(
+                            template_id=selected["template_id"],
+                            user_id=USER_ID,
+                            gym_location=gym_location or None,
+                            sleep_hours=sleep_hours if sleep_hours > 0 else None,
+                            energy_pre_workout=energy,
+                        )
+                    except WorkoutError as e:
+                        st.error(str(e))
+                    else:
+                        st.session_state.active_session_id = session_id
+                        st.session_state.focused_execution_id = None
+                        st.rerun()
+            with col_del:
+                if st.button(
+                    "Delete",
+                    use_container_width=True,
+                    key="delete_template_btn",
+                    help="Delete this template",
+                ):
+                    try:
+                        delete_template(selected["template_id"], USER_ID)
+                    except WorkoutError as e:
+                        st.error(str(e))
+                    else:
+                        st.rerun()
+
+        st.markdown("**— or start a new workout from scratch —**")
+
+    # ── Blank workout ─────────────────────────────────────────────
     with st.container(border=True):
         st.subheader("Start a new workout")
 
         workout_type = st.selectbox("Workout type", config.WORKOUT_TYPES)
-
-        with st.expander("Optional details (location, sleep, energy)"):
-            gym_location = st.text_input("Gym location")
-            sleep_hours = st.number_input(
-                "Sleep last night (hours)",
-                min_value=0.0,
-                max_value=14.0,
-                value=0.0,
-                step=0.5,
-                help="Leave at 0 to skip.",
-            )
-            energy = st.slider(
-                "Energy level right now",
-                min_value=1,
-                max_value=10,
-                value=7,
-                help="1 = exhausted, 10 = ready to go.",
-            )
+        gym_location, sleep_hours, energy = _render_optional_details("new_")
 
         if st.button("▶️ Begin workout", use_container_width=True, type="primary"):
             try:
                 session_id = start_session(
                     user_id=USER_ID,
                     workout_type=workout_type,
-                    gym_location=gym_location,
+                    gym_location=gym_location or None,
                     sleep_hours=sleep_hours if sleep_hours > 0 else None,
                     energy_pre_workout=energy,
                 )
@@ -171,11 +251,20 @@ def _render_session_header(active_session) -> None:
 def _render_end_workout_form(session_id: int) -> None:
     """
     Confirmation block shown when the user clicks End. Asks for optional
-    notes and provides cancel + confirm buttons.
+    notes, offers to save the session as a template, and provides
+    cancel + confirm buttons.
     """
     with st.container(border=True):
         st.markdown("**End this workout?**")
         notes = st.text_area("Session notes (optional)", key="end_notes")
+
+        save_as_template = st.checkbox("Save as template", key="end_save_template")
+        if save_as_template:
+            st.text_input(
+                "Template name",
+                placeholder="e.g. Push A, Monday Pull, Leg Day",
+                key="end_template_name",
+            )
 
         col1, col2 = st.columns(2)
         with col1:
@@ -184,6 +273,19 @@ def _render_end_workout_form(session_id: int) -> None:
                 st.rerun()
         with col2:
             if st.button("Confirm end", use_container_width=True, type="primary"):
+                # Save template first (before ending the session) so that
+                # get_executions_for_session still returns results.
+                if save_as_template:
+                    name = st.session_state.get("end_template_name", "").strip()
+                    if not name:
+                        st.error("Enter a template name before confirming.")
+                        st.stop()
+                    try:
+                        save_session_as_template(session_id, USER_ID, name)
+                    except WorkoutError as e:
+                        st.error(str(e))
+                        st.stop()
+
                 try:
                     end_session(session_id, notes=notes)
                 except WorkoutError as e:
@@ -192,7 +294,11 @@ def _render_end_workout_form(session_id: int) -> None:
                     st.session_state.show_end_form = False
                     st.session_state.active_session_id = None
                     st.session_state.focused_execution_id = None
-                    st.success("Workout ended. Nice work.")
+                    if save_as_template:
+                        name = st.session_state.get("end_template_name", "")
+                        st.success(f"Workout ended and saved as template "{name}".")
+                    else:
+                        st.success("Workout ended. Nice work.")
                     st.rerun()
 
 

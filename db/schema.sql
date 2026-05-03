@@ -78,6 +78,32 @@ CREATE TABLE IF NOT EXISTS sets (
 );
 
 -- ============================================================
+-- Workout templates (saved sessions the user can relaunch)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS workout_templates (
+    template_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id         INTEGER NOT NULL,
+    name            TEXT NOT NULL,
+    workout_type    TEXT,
+    created_at      TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- ============================================================
+-- Template exercises (ordered list of exercises in a template)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS template_exercises (
+    template_exercise_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    template_id             INTEGER NOT NULL,
+    exercise_id             INTEGER NOT NULL,
+    equipment_brand         TEXT,
+    equipment_model         TEXT,
+    exercise_order          INTEGER NOT NULL,
+    FOREIGN KEY (template_id) REFERENCES workout_templates(template_id),
+    FOREIGN KEY (exercise_id) REFERENCES exercises(exercise_id)
+);
+
+-- ============================================================
 -- Indexes for query performance
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_sessions_user        ON workout_sessions(user_id);
@@ -85,3 +111,5 @@ CREATE INDEX IF NOT EXISTS idx_sessions_start_time  ON workout_sessions(start_ti
 CREATE INDEX IF NOT EXISTS idx_executions_session   ON exercise_executions(session_id);
 CREATE INDEX IF NOT EXISTS idx_executions_exercise  ON exercise_executions(exercise_id);
 CREATE INDEX IF NOT EXISTS idx_sets_execution       ON sets(execution_id);
+CREATE INDEX IF NOT EXISTS idx_templates_user       ON workout_templates(user_id);
+CREATE INDEX IF NOT EXISTS idx_template_exercises   ON template_exercises(template_id);
